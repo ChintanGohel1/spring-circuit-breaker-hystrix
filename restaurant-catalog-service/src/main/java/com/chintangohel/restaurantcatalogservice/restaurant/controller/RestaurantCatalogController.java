@@ -13,6 +13,7 @@ import com.chintangohel.restaurantcatalogservice.restaurant.bean.Restaurant;
 import com.chintangohel.restaurantcatalogservice.restaurant.bean.RestaurantCatalog;
 import com.chintangohel.restaurantcatalogservice.restaurant.bean.RestaurantCatalogResponseBean;
 import com.chintangohel.restaurantcatalogservice.restaurant.bean.UserRating;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
 public class RestaurantCatalogController {
@@ -23,6 +24,7 @@ public class RestaurantCatalogController {
 	private RestTemplate restTemplate;
 
 	@GetMapping(path = PATH_GET_RESTAURANT_CATALOG)
+	@HystrixCommand(fallbackMethod = "fallbackGetrestaurantCatalog")
 	public RestaurantCatalogResponseBean getrestaurantCatalog(@PathVariable("userId") String userId) {
 		// UserRating userRating = restTemplate.getForObject(
 		// "http://rating-data-service/ratingDataService/getRestaurantRating/" +
@@ -42,6 +44,13 @@ public class RestaurantCatalogController {
 
 		return restaurantCatalogResponseBean;
 
+	}
+	
+	
+	@SuppressWarnings("unused")
+	private RestaurantCatalogResponseBean fallbackGetrestaurantCatalog(@PathVariable("userId")String userId){
+		System.out.println("fallback method called");
+		return null;
 	}
 
 }
