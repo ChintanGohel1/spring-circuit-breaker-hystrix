@@ -12,6 +12,8 @@ import com.chintangohel.restaurantcatalogservice.restaurant.bean.Restaurant;
 import com.chintangohel.restaurantcatalogservice.restaurant.bean.RestaurantCatalog;
 import com.chintangohel.restaurantcatalogservice.restaurant.bean.RestaurantCatalogResponseBean;
 import com.chintangohel.restaurantcatalogservice.restaurant.bean.UserRating;
+import com.chintangohel.restaurantcatalogservice.restaurant.service.RestaurantInfoService;
+import com.chintangohel.restaurantcatalogservice.restaurant.service.UserRatingService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
@@ -19,17 +21,23 @@ public class RestaurantCatalogController {
 
 	private static final String PATH_GET_RESTAURANT_CATALOG = "/getRestaurantCatalog";
 
+	// @Autowired
+	// private RestTemplate restTemplate;
+
 	@Autowired
-	private RestTemplate restTemplate;
+	private UserRatingService userRatingService;
+
+	@Autowired
+	private RestaurantInfoService restaurantInfoService;
 
 	@GetMapping(path = PATH_GET_RESTAURANT_CATALOG + "/{userId}")
-	@HystrixCommand(fallbackMethod = "fallbackGetrestaurantCatalog")
+//	@HystrixCommand(fallbackMethod = "fallbackGetrestaurantCatalog")
 	public RestaurantCatalogResponseBean getrestaurantCatalog(@PathVariable("userId") String userId) {
 		// UserRating userRating = restTemplate.getForObject(
 		// "http://rating-data-service/ratingDataService/getRestaurantRating/" +
 		// userId, UserRating.class);
 		//
-		UserRating userRating = getUserRating(userId);
+		UserRating userRating = userRatingService.getUserRating(userId);
 		RestaurantCatalogResponseBean restaurantCatalogResponseBean = new RestaurantCatalogResponseBean();
 		restaurantCatalogResponseBean.setRestaurants(userRating.getRatings().stream().map(data -> {
 
@@ -37,7 +45,7 @@ public class RestaurantCatalogController {
 			// "http://restaurant-info-service/restaurantInfoService/getRestaurantInfo/"
 			// + data.getRestaurantId(),
 			// Restaurant.class);
-			Restaurant restaurant = getRestaurantInfo(data.getRestaurantId());
+			Restaurant restaurant = restaurantInfoService.getRestaurantInfo(data.getRestaurantId());
 
 			return new RestaurantCatalog(restaurant.getName(), restaurant.getDescription(), restaurant.getLocation(),
 					data.getRating());
@@ -47,36 +55,11 @@ public class RestaurantCatalogController {
 
 	}
 
-	@HystrixCommand(fallbackMethod = "fallbackGetUserRating")
-	private UserRating getUserRating(String userId) {
-		return restTemplate.getForObject("http://rating-data-service/ratingDataService/getRestaurantRating/" + userId,
-				UserRating.class);
-	}
-
-	@SuppressWarnings("unused")
-	private UserRating fallbackGetUserRating(String userId) {
-		System.out.println("fallbackGetUserRating method called");
-		return null;
-	}
-
-	@HystrixCommand(fallbackMethod = "fallbackGetRestaurantInfo")
-	public Restaurant getRestaurantInfo(String restaurantId) {
-		return restTemplate.getForObject(
-				"http://restaurant-info-service/restaurantInfoService/getRestaurantInfo/" + restaurantId,
-				Restaurant.class);
-
-	}
-
-	@SuppressWarnings("unused")
-	private Restaurant fallbackGetRestaurantInfo(String restaurantId) {
-		System.out.println("fallbackGetRestaurantInfo method called");
-		return null;
-	}
-
-	@SuppressWarnings("unused")
-	private RestaurantCatalogResponseBean fallbackGetrestaurantCatalog(@PathVariable("userId") String userId) {
-		System.out.println("fallback method called");
-		return null;
-	}
+	// @SuppressWarnings("unused")
+	// private RestaurantCatalogResponseBean
+	// fallbackGetrestaurantCatalog(@PathVariable("userId") String userId) {
+	// System.out.println("fallback method called");
+	// return null;
+	// }
 
 }
