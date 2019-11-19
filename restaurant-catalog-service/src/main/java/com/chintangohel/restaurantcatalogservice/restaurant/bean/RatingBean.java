@@ -13,8 +13,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class RatingBean {
 
-	private String restaurantId;
+    private String restaurantId;
 
-	private int rating;
+    private int rating;
 
 }

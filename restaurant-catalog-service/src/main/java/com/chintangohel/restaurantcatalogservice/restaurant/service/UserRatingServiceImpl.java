@@ -13,19 +13,19 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 @Component
 public class UserRatingServiceImpl implements UserRatingService {
 
-	@Autowired
-	private RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
-	@Override
-	@HystrixCommand(fallbackMethod = "fallbackGetUserRating")
-	public UserRating getUserRating(String userId) {
-		return restTemplate.getForObject("http://rating-data-service/ratingDataService/getRestaurantRating/" + userId,
-				UserRating.class);
-	}
+    @Override
+    @HystrixCommand(fallbackMethod = "fallbackGetUserRating")
+    public UserRating getUserRating(String userId) {
+        return restTemplate.getForObject("http://rating-data-service/ratingDataService/getRestaurantRating/" + userId,
+                UserRating.class);
+    }
 
-	@SuppressWarnings("unused")
-	private UserRating fallbackGetUserRating(String userId) {
-		System.out.println("fallbackGetUserRating method called");
-		return new UserRating(userId, Arrays.asList(new RatingBean("100", 4), new RatingBean("200", 3)));
-	}
+    @SuppressWarnings("unused")
+    private UserRating fallbackGetUserRating(String userId) {
+        System.out.println("fallbackGetUserRating method called");
+        return new UserRating(userId, Arrays.asList(new RatingBean("100", 4), new RatingBean("200", 3)));
+    }
 }
