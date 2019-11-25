@@ -13,6 +13,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Restaurant {
 
+	private String id;
+	
 	private String name;
 
 	private String description;

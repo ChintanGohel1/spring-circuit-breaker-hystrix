@@ -19,7 +19,7 @@ public class RestaurantInfoController {
 	@GetMapping(path = PATH_GET_RESTAURANT_INFO)
 	public Restaurant getRestaurantInfo(@PathVariable("restaurantId") String restaurantId) {
 
-		return new Restaurant("Honest", "Restaurant for North Indian Cusine", "Ahmedabad");
+		return new Restaurant("1", "Honest", "Restaurant for North Indian Cusine", "Ahmedabad");
 
 	}
 
